@@ -1,3 +1,7 @@
+# Về dự án
+
+Xây dựng back-end cho trang thông tin nhà thờ Hải Điền ngoài ra với người dùng có tài khoản có thể đăng ký khóa học cũng như tạo bài đăng trên trang.
+
 ## Công Nghệ Sử Dụng
 
 Dự án được xây dựng với các công nghệ sau:
@@ -19,4 +23,7 @@ hai_dien_church/
 ├───repository/
 ├───service/  
 └───utils/ 
-```  
+```
+## Bảng quan hệ 
+![ERD](https://github.com/TunLin19/hai-dien-church-be/blob/main/church.drawio.png)
+
