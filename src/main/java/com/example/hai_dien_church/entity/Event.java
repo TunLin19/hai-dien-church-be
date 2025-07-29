@@ -1,11 +1,11 @@
 package com.example.hai_dien_church.entity;
 
 import com.example.hai_dien_church.enums.EventStatus;
+import com.example.hai_dien_church.enums.EventType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -25,15 +25,14 @@ public class Event {
     String title;
     String image;
     String time;
-    LocalDate date;
-    @Lob
-    String description;
-
+    String date;
+    @Enumerated(EnumType.STRING)
+    EventType eventType;
+    String institute;
     @Enumerated(EnumType.STRING)
     EventStatus eventStatus;
-
-    @ManyToMany
-    Set<Account> account;
+    @Lob
+    String description;
 
 
 }

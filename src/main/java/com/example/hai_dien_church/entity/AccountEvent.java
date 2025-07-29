@@ -1,5 +1,6 @@
 package com.example.hai_dien_church.entity;
 
+import com.example.hai_dien_church.enums.AccountEventStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,14 +11,22 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "location")
+@Table(name = "event_account")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Location {
+public class AccountEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    String name;
+    @ManyToOne
+    Event event;
+
+    String note;
+
+    @ManyToOne
+    Account account;
+    @Enumerated(EnumType.STRING)
+    AccountEventStatus eventStatus;
 
 }

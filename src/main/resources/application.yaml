@@ -21,17 +21,26 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: tringuyenquoc15102004@gmail.com
-    password: nhej ckwm cglr zqyr
+    username: ${U_MAIL}
+    password: ${P_MAIL}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 
+jwt:
+  signerKey: ${S_K}
 
 
-
+cloudinary:
+  cloud_name: ${C_N}
+  api_key: ${A_K}
+  api_secret: ${A_S}
 

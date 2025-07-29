@@ -18,16 +18,15 @@ public class Action {
 
     String title;
     String image;
+    @Lob
     String description;
+
 
     @JoinColumn(name = "event_id")
     @ManyToOne
     Event event;
 
-
-    @JoinColumn(name = "location_id")
-    @ManyToOne
-    Location location;
+    String location;
 
 
 }
