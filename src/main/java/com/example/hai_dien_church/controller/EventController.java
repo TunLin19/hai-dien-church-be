@@ -57,7 +57,7 @@ public class EventController {
                 .build();
     }
 
-    @PostMapping("/{accountEventId}")
+    @PostMapping("/{accountEventId}/account")
     public ApiResponse<Void> applyJoinEvent(@PathVariable("accountEventId") String id){
         eventService.applyJoinEvent(id);
         return ApiResponse.<Void>builder()

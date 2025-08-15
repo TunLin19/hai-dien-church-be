@@ -145,7 +145,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse signup(SignupRequest signupRequest) {
 
-        if (submitOtp(signupRequest.getEmail())) {
+        if (submitOtp(signupRequest.getEmail(), signupRequest.getOtp())) {
             Role role = roleRepository.findByName("USER");
             Account account = Account.builder()
                     .email(signupRequest.getEmail())
@@ -167,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse signing(LoginRequest loginRequest) {
-        if (submitOtp(loginRequest.getEmail())) {
+        if (submitOtp(loginRequest.getEmail(), loginRequest.getOtp())) {
             Account account = accountRepository.findByEmail(loginRequest.getEmail());
             String token = generateToken(account);
             return AuthResponse.builder()
@@ -199,16 +199,17 @@ public class AuthServiceImpl implements AuthService {
         return IntrospectResponse.builder().valid(isValid).build();
     }
 
-    private boolean submitOtp(String email){
+    private boolean submitOtp(String email, String otp){
         Verification verification = verificationRepository.findByEmail(email);
         if (verification != null){
             if (verification.getExpireTime().isBefore(LocalDateTime.now())){
                 throw new AppException(ErrorCode.EXPIRE_VALUE);
+            }else if(!verification.getOtp().equals(otp)){
+                throw new AppException(ErrorCode.INVALID_VALUE);
             }
             return true;
-        }else {
-            throw new AppException(ErrorCode.INVALID_VALUE);
         }
+        return false;
     }
 
     private String generateToken(Account account){

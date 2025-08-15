@@ -6,21 +6,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-
-    @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException e){
-        log.error("Exception:",e);
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
-
-        return ResponseEntity.badRequest().body(apiResponse);
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    ResponseEntity<ApiResponse> handlingIllegalStateException(NoResourceFoundException exception) {
+        ErrorCode errorCode = ErrorCode.NOT_PATH;
+        log.error(exception.getMessage());
+        return ResponseEntity.status(errorCode.getHttpStatusCode())
+                .body(ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage()+exception.getMessage())
+                        .build());
     }
+
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handlingAppException(AppException appException){
@@ -43,5 +45,16 @@ public class GlobalExceptionHandler {
                         .message(errorCode.getMessage())
                         .build());
     }
+
+    @ExceptionHandler(value = Exception.class)
+    ResponseEntity<ApiResponse> handlingRuntimeException(Exception e){
+        log.error("Exception:",e);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
+        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
 
 }

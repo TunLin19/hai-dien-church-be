@@ -13,6 +13,7 @@ public enum ErrorCode {
     EXPIRE_VALUE(1003,"Hết thời gian xác thực",HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(1004, "Tài khoản không xác thực", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1005, "Quyền không xác thực", HttpStatus.FORBIDDEN),
+    NOT_PATH(1111,"Error:",HttpStatus.NOT_FOUND),
 
     ;
     private final int code;

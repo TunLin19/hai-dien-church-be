@@ -36,7 +36,7 @@ public class ActionController {
     }
 
     @PatchMapping
-    public ApiResponse<Void> update(@RequestParam("eventId") String id,
+    public ApiResponse<Void> update(@RequestParam("actionId") String id,
                                     @RequestBody ActionRequest actionRequest){
         actionService.updateAction(id,actionRequest);
         return ApiResponse.<Void>builder()
