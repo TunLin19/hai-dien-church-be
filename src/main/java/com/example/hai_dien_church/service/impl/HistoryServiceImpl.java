@@ -26,6 +26,10 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public HistoryResponse create(HistoryRequest historyRequest) {
         History history = historyMapper.toHistory(historyRequest);
+        if (historyRequest.getUrl().toLowerCase().endsWith(".mp4")){
+            history.setType(false);
+        }else
+            history.setType(true);
         historyRepository.save(history);
         return historyMapper.toHistoryResponse(history);
     }

@@ -12,7 +12,6 @@ public class HistoryRequest {
 
     String title;
     String url;
-    Boolean type;
     String description;
 
 }
