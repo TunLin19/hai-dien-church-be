@@ -50,7 +50,8 @@ public class AppConfiguration {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
-                "https://nhathohaidien.com"
+                "https://nhathohaidien.com",
+                "https://www.nhathohaidien.com"
         ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
