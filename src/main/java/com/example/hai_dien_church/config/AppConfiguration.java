@@ -14,6 +14,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -25,16 +27,20 @@ public class AppConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.authorizeHttpRequests(req-> req
-                .requestMatchers("/api/**").authenticated()
-                .anyRequest().permitAll()
-        );
-        httpSecurity.oauth2ResourceServer(oauth2->oauth2
-                .jwt(jwtConfigurer -> jwtConfigurer
-                        .decoder(customJwtDecoder)
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity
+                .cors()
+                .and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(req -> req
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().permitAll()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtConfigurer -> jwtConfigurer
+                                .decoder(customJwtDecoder)
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                );
         return httpSecurity.build();
     }
 
@@ -42,9 +48,13 @@ public class AppConfiguration {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*");
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",
+                "https://nhathohaidien.com"
+        ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
