@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -46,5 +47,12 @@ public class AuthController {
                 .build();
     }
 
+    @PostMapping("/outbound/authentication")
+    public ApiResponse<AuthResponse> outboundAuthentication(@RequestParam("code") String code){
+        AuthResponse authResponse = authService.outboundAuthentication(code);
+        return ApiResponse.<AuthResponse>builder()
+                .result(authResponse)
+                .build();
+    }
 
 }

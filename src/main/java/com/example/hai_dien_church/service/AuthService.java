@@ -15,4 +15,5 @@ public interface AuthService {
     AuthResponse signup(SignupRequest signupRequest);
     AuthResponse signing(LoginRequest loginRequest);
     IntrospectResponse introspect(String token);
+    AuthResponse outboundAuthentication(String code);
 }

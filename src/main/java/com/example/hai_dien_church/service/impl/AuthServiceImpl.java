@@ -1,5 +1,6 @@
 package com.example.hai_dien_church.service.impl;
 
+import com.example.hai_dien_church.dto.request.ExchangeRequest;
 import com.example.hai_dien_church.dto.request.LoginRequest;
 import com.example.hai_dien_church.dto.request.SignupRequest;
 import com.example.hai_dien_church.dto.response.AuthResponse;
@@ -10,8 +11,10 @@ import com.example.hai_dien_church.entity.Verification;
 import com.example.hai_dien_church.exception.AppException;
 import com.example.hai_dien_church.exception.ErrorCode;
 import com.example.hai_dien_church.repository.AccountRepository;
+import com.example.hai_dien_church.repository.http_client.OutboundIdentityClient;
 import com.example.hai_dien_church.repository.RoleRepository;
 import com.example.hai_dien_church.repository.VerificationRepository;
+import com.example.hai_dien_church.repository.http_client.OutboundUserClient;
 import com.example.hai_dien_church.service.AuthService;
 import com.example.hai_dien_church.utils.MailUtil;
 import com.nimbusds.jose.*;
@@ -19,7 +22,6 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -48,10 +50,24 @@ public class AuthServiceImpl implements AuthService {
     RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
     MailUtil mailUtil;
+    OutboundIdentityClient outboundIdentityClient;
+    OutboundUserClient outboundUserClient;
 
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
+
+    @NonFinal
+    protected final String CLIENT_ID="40476816046-768146e5dvv4p6a1d4er3kpl6gb4ekuc.apps.googleusercontent.com";
+
+    @NonFinal
+    protected final String CLIENT_SECRET="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";
+
+    @NonFinal
+    protected final String REDIRECT_URI="http://localhost:5173/authenticate";
+
+    @NonFinal
+    protected final String GRANT_TYPE="authorization_code";
 
     @Override
     public void sentOtpLogin(LoginRequest loginRequest) {
@@ -197,6 +213,33 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return IntrospectResponse.builder().valid(isValid).build();
+    }
+
+    @Override
+    public AuthResponse outboundAuthentication(String code) {
+        var response = outboundIdentityClient.exchangeToken(ExchangeRequest.builder()
+                .code(code)
+                .clientId(CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .redirectUri(REDIRECT_URI)
+                .grantType(GRANT_TYPE)
+                .build());
+        var userInfo = outboundUserClient.getUserInfo("json",response.getAccessToken());
+        log.info("user {}",userInfo);
+        Role role = roleRepository.findByName("USER");
+        var account = accountRepository.findByEmail(userInfo.getEmail());
+        if (account == null){
+            account = accountRepository.save(account.builder()
+                    .email(userInfo.getEmail())
+                    .fullName(userInfo.getGivenName())
+                    .role(role)
+                    .build());
+        }
+
+        String token = generateToken(account);
+        return AuthResponse.builder()
+                .token(token)
+                .build();
     }
 
     private boolean submitOtp(String email, String otp){

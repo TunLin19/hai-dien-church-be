@@ -1,5 +1,6 @@
 package com.example.hai_dien_church.dto.request;
 
+import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
